@@ -1,0 +1,28 @@
+import logger from "loglevel";
+import { startServer } from "./src/start";
+
+const convertLogLevel: (logLevel: string | undefined) => logger.LogLevelDesc = (
+  logLevel: string | undefined
+) => {
+  switch (logLevel) {
+    case "1":
+    case "error":
+      return logger.levels.ERROR;
+    case "2":
+    case "warn":
+      return logger.levels.WARN;
+    default:
+      return logger.levels.INFO;
+  }
+};
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+const isTest = process.env.NODE_ENV === "test";
+const logLevel: logger.LogLevelDesc =
+  convertLogLevel(process.env.LOG_LEVEL) ||
+  (isTest ? logger.levels.WARN : logger.levels.INFO);
+
+logger.setLevel(logLevel);
+
+startServer();
